@@ -1,9 +1,9 @@
-var express = require('express');
-var app = express();
+const express = require('express');
+const app = express();
 
-var cors = require('cors');
+const cors = require('cors');
+
 app.use(cors({ optionSuccessStatus: 200 }));
-
 app.use(express.static('public'));
 
 app.get("/", function (_, res) {
@@ -24,7 +24,7 @@ function dateValidator(req, res, next) {
 
   if (date_string) {
     date = !isNaN(date_string)
-      ? new Date(parseInt(date_string, 10))
+      ? new Date(parseInt(date_string * 1000, 10))
       : new Date(date_string);
   } else {
     date = new Date();
@@ -41,6 +41,6 @@ function dateValidator(req, res, next) {
   next();
 }
 
-var listener = app.listen(process.env.PORT, function () {
+const listener = app.listen(process.env.PORT, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
