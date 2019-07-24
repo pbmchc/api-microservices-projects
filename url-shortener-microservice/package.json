@@ -1,0 +1,26 @@
+{
+	"name": "api-microservices-project-url-shortener-service",
+	"version": "0.0.1",
+	"description": "An FCC Backend Challenge",
+	"main": "server.js",
+	"scripts": {
+		"start": "node server.js"
+	},
+	"dependencies": {
+		"body-parser": "^1.15.2",
+		"cors": "^2.8.1",
+		"dotenv": "^8.0.0",
+		"express": "^5.0.0-alpha.2",
+		"mongodb": "~3.2.7",
+		"mongoose": "~5.6.5"
+	},
+	"engines": {
+		"node": "4.4.5"
+	},
+	"keywords": [
+		"node",
+		"express",
+		"freecodecamp"
+	],
+	"license": "MIT"
+}
