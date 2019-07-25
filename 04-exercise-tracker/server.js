@@ -4,11 +4,21 @@ require('dotenv').config();
 
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 const cors = require('cors');
 
-const mongoose = require('mongoose');
+const userController = require('./controllers/userController');
+const userValidator = require('./validators/userValidator');
+
+mongoose.connect(
+  process.env.MONGO_URI,
+  {
+    useNewUrlParser: true,
+    useCreateIndex: true
+  }
+);
 
 app.use(cors());
 
@@ -19,6 +29,12 @@ app.use(express.static('public'));
 app.get('/', (_, res) => {
   res.sendFile(__dirname + '/views/index.html');
 });
+
+app.post(
+  '/api/exercise/new-user',
+  userValidator.validateUser,
+  userController.addUser
+);
 
 app.use((req, res, next) => {
   return next({ status: 404, message: 'not found' });
