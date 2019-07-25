@@ -9,6 +9,8 @@ const mongoose = require('mongoose');
 
 const cors = require('cors');
 
+const exerciseController = require('./controllers/exerciseController');
+const exerciseValidator = require('./validators/exerciseValidator');
 const userController = require('./controllers/userController');
 const userValidator = require('./validators/userValidator');
 
@@ -31,8 +33,14 @@ app.get('/', (_, res) => {
 });
 
 app.post(
+  '/api/exercise/add',
+  exerciseValidator,
+  exerciseController.addExercise
+);
+
+app.post(
   '/api/exercise/new-user',
-  userValidator.validateUser,
+  userValidator,
   userController.addUser
 );
 

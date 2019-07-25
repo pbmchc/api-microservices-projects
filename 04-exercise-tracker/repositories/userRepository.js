@@ -12,11 +12,11 @@ function createUser(username, done) {
     user.save((err, result) => {
         if (err) {
             const { code } = err;
-            const message = code === DUPLICATE_ENTRY_ERROR_CODE
+            const msg = code === DUPLICATE_ENTRY_ERROR_CODE
                 ? DUPLICATE_ENTRY_ERROR_MESSAGE
                 : DEFAULT_ERROR_MESSAGE;
 
-            return done({ message });
+            return done({ msg });
         }
 
         const { _id, username } = result;

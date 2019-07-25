@@ -1,18 +1,18 @@
 'use strict';
 
-const userRepository = require('../repositories/userRepository');
+const exerciseRepository = require('../repositories/exerciseRepository');
 const errorHandler = require('../utils/errorHandler');
 const { validationResult } = require('express-validator');
 
-function addUser(req, res, next) {
-    const { body: { username } } = req;
+function addExercise(req, res, next) {
+    const { body } = req;
     const { errors: [err] } = validationResult(req);
 
     if (err) {
         return next(errorHandler.prepareErrorPayload(err.msg));
     }
 
-    userRepository.createUser(username, (err, result) => {
+    exerciseRepository.createExercise(body, (err, result) => {
         if (err) {
             return next(errorHandler.prepareErrorPayload(err.msg));
         }
@@ -21,4 +21,4 @@ function addUser(req, res, next) {
     });
 }
 
-exports.addUser = addUser;
+exports.addExercise = addExercise;
