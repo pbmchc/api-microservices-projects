@@ -10,9 +10,9 @@ function createExercise(exercise, done) {
     const { date, ...part } = exercise;
     const newExercise = new Exercise(date ? exercise : part);
 
-    User.findById(exercise.userId, (err, _) => {
-        if (err) {
-            return done({ msg: MISSING_USER_ERROR_MESSAGE });
+    User.findById(exercise.userId, (err, result) => {
+        if (err || !result) {
+            return done({ msg: err ? DEFAULT_ERROR_MESSAGE : MISSING_USER_ERROR_MESSAGE });
         }
 
         newExercise.save((err, result) => {
