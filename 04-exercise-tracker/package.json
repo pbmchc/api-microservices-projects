@@ -18,7 +18,7 @@
 		"shortid": "^2.2.6"
 	},
 	"engines": {
-		"node": "6.9.1"
+		"node": ">=8.6.0"
 	},
 	"keywords": [
 		"node",
