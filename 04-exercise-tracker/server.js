@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 
 const cors = require('cors');
 
+const exerciseParamsValidator = require('./validators/exerciseParamsValidator');
 const exerciseController = require('./controllers/exerciseController');
 const exerciseValidator = require('./validators/exerciseValidator');
 const userController = require('./controllers/userController');
@@ -31,6 +32,12 @@ app.use(express.static('public'));
 app.get('/', (_, res) => {
   res.sendFile(__dirname + '/views/index.html');
 });
+
+app.get(
+  '/api/exercise/log',
+  exerciseParamsValidator,
+  exerciseController.getExercises
+)
 
 app.post(
   '/api/exercise/add',
