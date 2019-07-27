@@ -1,0 +1,23 @@
+{
+	"name": "api-microservices-project-file-metadata-service",
+	"version": "0.0.1",
+	"description": "An FCC Backend Challenge",
+	"main": "server.js",
+	"scripts": {
+		"start": "node server.js",
+		"watch": "nodemon server.js"
+	},
+	"dependencies": {
+		"express": "^5.0.0-alpha.2",
+		"cors": "^2.8.1"
+	},
+	"engines": {
+		"node": ">=8.6.0"
+	},
+	"keywords": [
+		"node",
+		"freecodecamp",
+		"express"
+	],
+	"license": "MIT"
+}
