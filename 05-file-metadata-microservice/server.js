@@ -1,5 +1,6 @@
 'use strict';
 
+const PORT = process.env.PORT || 3000;
 const express = require('express');
 const cors = require('cors');
 
@@ -18,6 +19,6 @@ app.post(
   fileController.extractFileMetadata
 );
 
-app.listen(process.env.PORT || 3000, function () {
-  console.log('Server is listening ...');
+app.listen(PORT, function () {
+  console.log(`Server is listening on port ${PORT}`);
 });
