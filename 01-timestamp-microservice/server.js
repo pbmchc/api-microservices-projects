@@ -1,7 +1,7 @@
+const PORT = process.env.PORT || 3000;
+const cors = require('cors');
 const express = require('express');
 const app = express();
-
-const cors = require('cors');
 
 app.use(cors({ optionSuccessStatus: 200 }));
 app.use(express.static('public'));
@@ -41,6 +41,6 @@ function dateValidator(req, res, next) {
   next();
 }
 
-const listener = app.listen(process.env.PORT, function () {
+const listener = app.listen(PORT, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
