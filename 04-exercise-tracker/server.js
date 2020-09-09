@@ -2,12 +2,11 @@
 
 require('dotenv').config();
 
+const PORT = process.env.PORT || 3000;
 const express = require('express');
-const app = express();
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-
-const cors = require('cors');
 
 const exerciseParamsValidator = require('./validators/exerciseParamsValidator');
 const exerciseController = require('./controllers/exerciseController');
@@ -15,8 +14,10 @@ const exerciseValidator = require('./validators/exerciseValidator');
 const userController = require('./controllers/userController');
 const userValidator = require('./validators/userValidator');
 
+const app = express();
+
 mongoose.connect(
-  process.env.MONGO_URI,
+  process.env.DB,
   {
     useNewUrlParser: true,
     useCreateIndex: true
@@ -72,6 +73,6 @@ app.use((err, req, res, next) => {
     .send(errMessage);
 });
 
-const listener = app.listen(process.env.PORT || 3000, () => {
+const listener = app.listen(PORT, () => {
   console.log('Your app is listening on port ' + listener.address().port)
 });
