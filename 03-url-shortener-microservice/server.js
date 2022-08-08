@@ -11,13 +11,7 @@ const urlValidator = require('./utils/validator.js');
 const urlController = require('./controllers/urlController.js');
 const app = express();
 
-mongoose.connect(
-  process.env.DB,
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  }
-);
+mongoose.connect(process.env.DB);
 
 app.use(cors());
 
