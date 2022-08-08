@@ -16,14 +16,7 @@ const userValidator = require('./validators/userValidator');
 
 const app = express();
 
-mongoose.connect(
-  process.env.DB,
-  {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useUnifiedTopology: true
-  }
-);
+mongoose.connect(process.env.DB);
 
 app.use(cors());
 
