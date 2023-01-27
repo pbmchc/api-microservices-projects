@@ -2,28 +2,27 @@
 
 require('dotenv').config();
 
-const PORT = process.env.PORT || 3000;
-const express = require('express');
 const cors = require('cors');
-const bodyParser = require('body-parser');
+const express = require('express');
 const mongoose = require('mongoose');
 
-const exerciseParamsValidator = require('./validators/exerciseParamsValidator');
 const exerciseController = require('./controllers/exerciseController');
+const exerciseParamsValidator = require('./validators/exerciseParamsValidator');
 const exerciseValidator = require('./validators/exerciseValidator');
 const userController = require('./controllers/userController');
 const userValidator = require('./validators/userValidator');
+
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 
 mongoose.connect(process.env.DB);
 
 app.use(cors());
-
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
 app.use(express.static('public'));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+
 app.get('/', (_, res) => {
   res.sendFile(__dirname + '/views/index.html');
 });
@@ -47,7 +46,7 @@ app.post(
 );
 
 app.use((req, res, next) => {
-  return next({ status: 404, message: 'not found' });
+  return next({ status: 404, message: 'Not Found' });
 });
 
 app.use((err, req, res, next) => {
@@ -67,6 +66,6 @@ app.use((err, req, res, next) => {
     .send(errMessage);
 });
 
-const listener = app.listen(PORT, () => {
-  console.log('Your app is listening on port ' + listener.address().port)
+app.listen(PORT, () => {
+  console.log(`Your app is listening on port ${PORT}`);
 });
