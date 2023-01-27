@@ -2,30 +2,31 @@
 
 require('dotenv').config();
 
-const PORT = process.env.PORT || 3000;
-const express = require('express');
 const cors = require('cors');
+const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const urlValidator = require('./utils/validator.js');
+
 const urlController = require('./controllers/urlController.js');
+const urlValidator = require('./utils/validator.js');
+
+const PORT = process.env.PORT || 3000;
+
 const app = express();
 
 mongoose.connect(process.env.DB);
 
 app.use(cors());
+app.use('/public', express.static('public'));
+app.use(express.urlencoded({ extended: false }));
 
-app.use('/public', express.static(process.cwd() + '/public'));
-app.use(bodyParser.urlencoded({ extended: 'false' }));
-
-app.get('/', function (_, res) {
-  res.sendFile(process.cwd() + '/views/index.html');
+app.get('/', (_, res) => {
+  res.sendFile(__dirname + '/views/index.html');
 });
 
 app.post('/api/shorturl/new', urlValidator, urlController.generateUrl);
 
 app.get('/api/shorturl/:link', urlController.decodeUrl);
 
-app.listen(PORT, function () {
+app.listen(PORT, () => {
   console.log(`Node listening on port ${PORT}`);
 });
