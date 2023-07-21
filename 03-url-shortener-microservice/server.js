@@ -5,6 +5,7 @@ require('dotenv').config();
 const cors = require('cors');
 const express = require('express');
 const mongoose = require('mongoose');
+const path = require('path');
 
 const urlController = require('./controllers/urlController.js');
 const urlValidator = require('./utils/validator.js');
@@ -13,10 +14,11 @@ const PORT = process.env.PORT || 3000;
 
 const app = express();
 
+mongoose.set('strictQuery', false);
 mongoose.connect(process.env.DB);
 
 app.use(cors());
-app.use('/public', express.static('public'));
+app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }));
 
 app.get('/', (_, res) => {
