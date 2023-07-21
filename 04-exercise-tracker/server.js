@@ -5,6 +5,7 @@ require('dotenv').config();
 const cors = require('cors');
 const express = require('express');
 const mongoose = require('mongoose');
+const path = require('path');
 
 const exerciseController = require('./controllers/exerciseController');
 const exerciseParamsValidator = require('./validators/exerciseParamsValidator');
@@ -16,10 +17,11 @@ const PORT = process.env.PORT || 3000;
 
 const app = express();
 
+mongoose.set('strictQuery', false);
 mongoose.connect(process.env.DB);
 
 app.use(cors());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
