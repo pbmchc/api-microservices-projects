@@ -12,7 +12,7 @@
 		"cors": "^2.8.1"
 	},
 	"devDependencies": {
-		"nodemon": "^2.0.19"
+		"nodemon": "^3.1.4"
 	},
 	"engines": {
 		"node": "4.4.5"
