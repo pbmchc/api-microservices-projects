@@ -1,13 +1,13 @@
 'use strict';
 
-const shortid = require('shortid');
+const { nanoid } = require('nanoid');
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 const userSchema = new Schema({
     _id: {
         type: String,
-        default: shortid.generate()
+        default: nanoid()
     },
     username: {
         type: String,
