@@ -3,9 +3,6 @@
 
 <head>
   <title>Timestamp Microservice</title>
-  <link rel="shortcut icon"
-    href="https://cdn.hyperdev.com/us-east-1%3A52a203ff-088b-420f-81be-45bf559d01b1%2Ffavicon.ico"
-    type="image/x-icon" />
   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
   <link href="style.css" rel="stylesheet" type="text/css">
 </head>
@@ -15,7 +12,7 @@
     <h2>API Project: Timestamp Microservice</h2>
     <h3>User Stories :</h3>
     <ol class="user-stories">
-      <li>The API endpoint is <code>GET [project_url]/api/timestamp/:date_string?</code></li>
+      <li>The API endpoint is <code>GET [project_url]/api/timestamp/{:date_string}</code></li>
       <li>A date string is valid if can be successfully parsed by <code>new Date(date_string)</code>.<br>
         Note that the unix timestamp needs to be an <strong>integer</strong> (not a string) specifying
         <strong>milliseconds</strong>.<br>
