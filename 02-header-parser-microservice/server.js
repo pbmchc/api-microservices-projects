@@ -1,23 +1,20 @@
-const cors = require('cors');
-const express = require('express');
+import cors from 'cors';
+import express from 'express';
 
 const PORT = process.env.PORT || 3000;
 
 const app = express();
 
-app.use(cors({ optionSuccessStatus: 200 }));
+app.use(cors({ optionsSuccessStatus: 200 }));
 app.use(express.static('public'));
-app.enable('trust proxy');
 
 app.get('/', (_, res) => {
-  res.sendFile(__dirname + '/views/index.html');
+  res.sendFile('views/index.html', { root: import.meta.dirname });
 });
 
-app.get(
-  '/api/whoami',
-  infoExtractor,
-  ({ userInfo }, res) => { res.json(userInfo) }
-);
+app.get('/api/whoami', infoExtractor, ({ userInfo }, res) => {
+  res.json(userInfo);
+});
 
 function infoExtractor(req, _, next) {
   const { ip } = req;
@@ -25,7 +22,7 @@ function infoExtractor(req, _, next) {
   req.userInfo = {
     ipaddress: ip,
     language: req.header('Accept-Language'),
-    software: req.header('User-Agent')
+    software: req.header('User-Agent'),
   };
 
   next();
