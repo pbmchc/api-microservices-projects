@@ -1,5 +1,8 @@
 # external modules
 */node_modules
 
+# file uploads
+*/public/uploads
+
 # environment variables
 */*.env
