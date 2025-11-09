@@ -1,40 +1,32 @@
-'use strict';
+import * as urlRepository from '../repositories/urlRepository.js';
 
-const urlRepository = require('../repositories/urlRepository.js');
-
-const URL_GENERATION_ERROR = 'Error while generating URL';
 const URL_DECODE_ERROR = 'Could not decode given URL';
+const URL_GENERATION_ERROR = 'Error while generating URL';
 const URL_NOT_FOUND = 'URL Not Found';
 
-function generateUrl({ error, sourceUrl }, res) {
-  if (error) {
-    return res.json({ error });
-  }
-  
-  urlRepository.generateUrl(sourceUrl, (err, result) => {
-    if (err) {
-      return res.json({ error: URL_GENERATION_ERROR });
-    }
-    
-    const { original_url, short_url } = result;
-    
-    res.json({ original_url, short_url });
-  });
-}
-
-function decodeUrl({ params: { link } }, res) {
-  urlRepository.findByShortenedLink(link, (err, result) => {
-    if (err) {
-      return res.json({ error: URL_DECODE_ERROR });
-    }
-    
+export async function decodeUrl({ params: { link } }, res) {
+  try {
+    const result = await urlRepository.findByShortenedLink(link);
     if (!result) {
       return res.status(404).send(URL_NOT_FOUND);
     }
-    
-    res.redirect(result.original_url);
-  });
+
+    const { original_url } = result;
+    return res.redirect(original_url);
+  } catch (err) {
+    return res.json({ error: URL_DECODE_ERROR });
+  }
 }
 
-exports.generateUrl = generateUrl;
-exports.decodeUrl = decodeUrl;
+export async function generateUrl({ error, sourceUrl }, res) {
+  if (error) {
+    return res.json({ error });
+  }
+
+  try {
+    const { original_url, short_url } = await urlRepository.generateUrl(sourceUrl);
+    return res.json({ original_url, short_url });
+  } catch (err) {
+    return res.json({ error: URL_GENERATION_ERROR });
+  }
+}

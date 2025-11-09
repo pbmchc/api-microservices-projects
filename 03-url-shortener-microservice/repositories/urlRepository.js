@@ -1,82 +1,36 @@
-'use strict';
+import { Url } from '../models/url.js';
+import * as converter from '../utils/converter.js';
 
-const Url = require('../models/url.js');
-const converter = require('../utils/converter.js');
-
-function generateUrl(link, done) {
-  findByFullLink(
-    link,
-    (err, result) => {
-      if (err) {
-        return done(err);
-      }
-
-      if (result) {
-        return done(null, result);
-      }
-
-      findLastUrl((err, [lastUrl]) => {
-        if (err) {
-          return done(err);
-        }
-
-        _createNewUrl(link, lastUrl, done);
-      });
-    }
-  );
-}
-
-function findByShortenedLink(link, done) {
-  Url.findOne({ short_url: link }, (err, result) => {
-    if (err) {
-      return done(err);
-    }
-
-    done(null, result);
-  });
-}
-
-function findByFullLink(link, done) {
-  Url.findOne({ original_url: link }, (err, result) => {
-    if (err) {
-      return done(err);
-    }
-
-    done(null, result);
-  });
-}
-
-function findLastUrl(done) {
-  Url
-    .find()
-    .sort('-ordinal')
-    .limit(1)
-    .select('ordinal')
-    .exec((err, result) => {
-      if (err) {
-        return done(err);
-      }
-
-      done(null, result);
-    });
-}
-
-function _createNewUrl(link, lastUrl, done) {
+async function createNewUrl(link, lastUrl) {
   const ordinal = lastUrl ? lastUrl.ordinal + 1 : 1;
   const url = new Url({
     original_url: link,
     short_url: converter.shortenUrl(ordinal),
-    ordinal
+    ordinal,
   });
 
-  url.save((err, result) => {
-    if (err) {
-      return done(err);
-    }
-
-    done(null, result);
-  });
+  return url.save();
 }
 
-exports.generateUrl = generateUrl;
-exports.findByShortenedLink = findByShortenedLink;
+async function findByFullLink(link) {
+  return Url.findOne({ original_url: link });
+}
+
+async function findLastUrl() {
+  const [lastUrl] = await Url.find().sort('-ordinal').limit(1).select('ordinal').exec();
+  return lastUrl;
+}
+
+export async function findByShortenedLink(link) {
+  return Url.findOne({ short_url: link });
+}
+
+export async function generateUrl(link) {
+  const existingUrl = await findByFullLink(link);
+  if (existingUrl) {
+    return existingUrl;
+  }
+
+  const lastUrl = await findLastUrl();
+  return createNewUrl(link, lastUrl);
+}

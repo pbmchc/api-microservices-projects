@@ -1,22 +1,18 @@
-'use strict';
-
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
-const urlSchema = new Schema({
+const UrlSchema = new Schema({
   original_url: {
     type: String,
-    required: true
+    required: true,
   },
   short_url: {
     type: String,
-    required: true
+    required: true,
   },
   ordinal: {
     type: Number,
-    required: true
-  }
+    required: true,
+  },
 });
-const Url = mongoose.model('Url', urlSchema);
-
-module.exports = Url;
+export const Url = mongoose.model('Url', UrlSchema);

@@ -1,19 +1,15 @@
-'use strict';
+import { CHARS } from '../constants/constants.js';
 
-const CHARS = require('../constants/constants.js');
-
-function shortenUrl(ordinal) {
+export function shortenUrl(ordinal) {
   let result = ordinal;
   const charCodes = [];
-  
+
   while (result > 0) {
     const { length } = CHARS;
-    
+
     charCodes.unshift(result % length);
     result = Math.floor(result / length);
   }
-  
-  return charCodes.map(code => CHARS[code]).join('');
-}
 
-exports.shortenUrl = shortenUrl;
+  return charCodes.map((code) => CHARS[code]).join('');
+}
