@@ -1,42 +1,36 @@
-'use strict';
+import { validationResult } from 'express-validator';
 
-const exerciseRepository = require('../repositories/exerciseRepository');
-const errorHandler = require('../utils/errorHandler');
-const { validationResult } = require('express-validator');
+import * as exerciseRepository from '../repositories/exerciseRepository.js';
+import { toHttpError, toValidationError } from '../utils/errors.js';
 
-function addExercise(req, res, next) {
+export async function addExercise(req, res, next) {
+  const { errors } = validationResult(req);
+  if (errors.length > 0) {
+    return next({ errors: errors.map((err) => toValidationError(err)) });
+  }
+
+  try {
     const { body } = req;
-    const { errors: [err] } = validationResult(req);
+    const result = await exerciseRepository.createExercise(body);
 
-    if (err) {
-        return next(errorHandler.prepareErrorPayload(err.msg));
-    }
-
-    exerciseRepository.createExercise(body, (err, result) => {
-        if (err) {
-            return next(errorHandler.prepareErrorPayload(err.msg));
-        }
-
-        res.json(result);
-    });
+    return res.json(result);
+  } catch (err) {
+    return next(toHttpError(err));
+  }
 }
 
-function getExercises(req, res, next) {
+export async function getExercisesLog(req, res, next) {
+  const { errors } = validationResult(req);
+  if (errors.length > 0) {
+    return next({ errors: errors.map((err) => toValidationError(err)) });
+  }
+
+  try {
     const { query } = req;
-    const { errors: [err] } = validationResult(req);
+    const result = await exerciseRepository.getExercises(query);
 
-    if (err) {
-        return next(errorHandler.prepareErrorPayload(err.msg));
-    }
-
-    exerciseRepository.getExercises(query, (err, result) => {
-        if (err) {
-            return next(errorHandler.prepareErrorPayload(err.msg));
-        }
-
-        res.json(result);
-    });
+    return res.json(result);
+  } catch {
+    return next(toHttpError(err));
+  }
 }
-
-exports.addExercise = addExercise;
-exports.getExercises = getExercises;

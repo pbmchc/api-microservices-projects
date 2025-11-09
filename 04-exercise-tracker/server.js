@@ -1,17 +1,15 @@
-'use strict';
+import 'dotenv/config';
 
-require('dotenv').config();
+import cors from 'cors';
+import express from 'express';
+import mongoose from 'mongoose';
 
-const cors = require('cors');
-const express = require('express');
-const mongoose = require('mongoose');
-const path = require('path');
-
-const exerciseController = require('./controllers/exerciseController');
-const exerciseParamsValidator = require('./validators/exerciseParamsValidator');
-const exerciseValidator = require('./validators/exerciseValidator');
-const userController = require('./controllers/userController');
-const userValidator = require('./validators/userValidator');
+import { HTTP_ERROR_CODES } from './constants/httpErrorCodes.js';
+import * as exerciseController from './controllers/exerciseController.js';
+import * as userController from './controllers/userController.js';
+import { createExercisesLogParamsValidationChain } from './validators/exercisesLogParamsValidator.js';
+import { createExerciseValidationChain } from './validators/exerciseValidator.js';
+import { createUserValidationChain } from './validators/userValidator.js';
 
 const PORT = process.env.PORT || 3000;
 
@@ -20,52 +18,39 @@ const app = express();
 mongoose.set('strictQuery', false);
 mongoose.connect(process.env.DB);
 
-app.use(cors());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.urlencoded({ extended: false }));
+app.use(cors({ optionsSuccessStatus: 200 }));
 app.use(express.json());
+app.use(express.static('public'));
+app.use(express.urlencoded({ extended: false }));
 
 app.get('/', (_, res) => {
-  res.sendFile(__dirname + '/views/index.html');
+  res.sendFile('views/index.html', { root: import.meta.dirname });
 });
 
 app.get(
   '/api/exercise/log',
-  exerciseParamsValidator,
-  exerciseController.getExercises
-)
-
-app.post(
-  '/api/exercise/add',
-  exerciseValidator,
-  exerciseController.addExercise
+  createExercisesLogParamsValidationChain(),
+  exerciseController.getExercisesLog
 );
+app.post('/api/exercise/add', createExerciseValidationChain(), exerciseController.addExercise);
+app.post('/api/exercise/new-user', createUserValidationChain(), userController.addUser);
 
-app.post(
-  '/api/exercise/new-user',
-  userValidator,
-  userController.addUser
-);
-
-app.use((req, res, next) => {
-  return next({ status: 404, message: 'Not Found' });
+app.use((_req, res, _next) => {
+  res.status(HTTP_ERROR_CODES.NOT_FOUND).type('txt').send('Not Found');
 });
 
-app.use((err, req, res, next) => {
+app.use((err, _req, res, _next) => {
   let errCode, errMessage;
 
   if (err.errors) {
-    errCode = 400;
-    const keys = Object.keys(err.errors);
-
-    errMessage = err.errors[keys[0]].message;
+    errCode = HTTP_ERROR_CODES.BAD_REQUEST;
+    errMessage = err.errors[Object.keys(err.errors)[0]].message;
   } else {
-    errCode = err.status || 500;
+    errCode = err.status || HTTP_ERROR_CODES.INTERNAL_SERVER_ERROR;
     errMessage = err.message || 'Internal Server Error';
   }
 
-  res.status(errCode).type('txt')
-    .send(errMessage);
+  res.status(errCode).type('txt').send(errMessage);
 });
 
 app.listen(PORT, () => {

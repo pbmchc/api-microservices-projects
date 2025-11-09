@@ -1,24 +1,22 @@
-'use strict';
+import { validationResult } from 'express-validator';
 
-const userRepository = require('../repositories/userRepository');
-const errorHandler = require('../utils/errorHandler');
-const { validationResult } = require('express-validator');
+import * as userRepository from '../repositories/userRepository.js';
+import { toHttpError, toValidationError } from '../utils/errors.js';
 
-function addUser(req, res, next) {
-    const { body: { username } } = req;
-    const { errors: [err] } = validationResult(req);
+export async function addUser(req, res, next) {
+  const { errors } = validationResult(req);
+  if (errors.length > 0) {
+    return next({ errors: errors.map((err) => toValidationError(err)) });
+  }
 
-    if (err) {
-        return next(errorHandler.prepareErrorPayload(err.msg));
-    }
+  try {
+    const {
+      body: { username },
+    } = req;
+    const result = await userRepository.createUser(username);
 
-    userRepository.createUser(username, (err, result) => {
-        if (err) {
-            return next(errorHandler.prepareErrorPayload(err.msg));
-        }
-
-        res.json(result);
-    });
+    return res.json(result);
+  } catch (err) {
+    return next(toHttpError(err));
+  }
 }
-
-exports.addUser = addUser;

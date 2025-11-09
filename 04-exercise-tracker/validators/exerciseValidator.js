@@ -1,32 +1,22 @@
-'use strict';
+import { body } from 'express-validator';
 
-const { body } = require('express-validator');
-const { createErrorMessage } = require('../utils/errorHandler');
+import { toValidationErrorMessage } from '../utils/errors.js';
 
-const MISSING_REQUIRED_FIELD_ERROR = 'Missing required field';
 const INVALID_FIELD_VALUE_ERROR = 'Invalid field value';
+const MISSING_REQUIRED_FIELD_ERROR = 'Missing required field';
 
-module.exports = [
+export const createExerciseValidationChain = () => {
+  return [
     body(['userId', 'description', 'duration'])
-        .not()
-        .isEmpty()
-        .withMessage(
-            (_, { path }) =>
-                createErrorMessage(MISSING_REQUIRED_FIELD_ERROR, path)
-        ),
+      .not()
+      .isEmpty()
+      .withMessage((_, { path }) => toValidationErrorMessage(path, MISSING_REQUIRED_FIELD_ERROR)),
     body('duration')
-        .isInt({ gt: 0 })
-        .withMessage(
-            (_, { path }) =>
-                createErrorMessage(INVALID_FIELD_VALUE_ERROR, path)
-        ),
+      .isInt({ gt: 0 })
+      .withMessage((_, { path }) => toValidationErrorMessage(path, INVALID_FIELD_VALUE_ERROR)),
     body('date')
-        .optional({
-            checkFalsy: true
-        })
-        .isISO8601()
-        .withMessage(
-            (_, { path }) =>
-                createErrorMessage(INVALID_FIELD_VALUE_ERROR, path)
-        )
-];
+      .optional({ checkFalsy: true })
+      .isISO8601()
+      .withMessage((_, { path }) => toValidationErrorMessage(path, INVALID_FIELD_VALUE_ERROR)),
+  ];
+};

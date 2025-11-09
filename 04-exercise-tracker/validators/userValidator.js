@@ -1,12 +1,7 @@
-'use strict';
-
-const { body } = require('express-validator');
+import { body } from 'express-validator';
 
 const INVALID_USERNAME_ERROR = 'Invalid username';
 
-module.exports = [
-    body('username')
-        .not()
-        .isEmpty()
-        .withMessage(INVALID_USERNAME_ERROR)
-];
+export const createUserValidationChain = () => {
+  return [body('username').not().isEmpty().withMessage(INVALID_USERNAME_ERROR)];
+};

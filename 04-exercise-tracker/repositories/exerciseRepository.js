@@ -1,78 +1,55 @@
-'use strict';
+import { Exercise } from '../models/exercise.js';
+import { CustomError, CUSTOM_ERROR_TYPES } from '../utils/errors.js';
+import * as userRepository from './userRepository.js';
 
-const User = require('../models/user');
-const Exercise = require('../models/exercise');
+const EXERCISE_SAVE_ERROR = 'Error while saving exercise';
+const EXERCISES_GET_ERROR = 'Error while getting exercises';
+const USER_NOT_FOUND_ERROR = 'User does not exist';
 
-const DATE_BOUNDARIES = { FROM: 0, TO: 1 };
-const MISSING_USER_ERROR_MESSAGE = 'User does not exist';
-const SAVING_EXERCISE_ERROR_MESSAGE = 'Error while saving exercise';
-const FETCHING_EXERCISES_ERROR_MESSAGE = 'Error while fetching exercises';
-
-function createExercise(exercise, done) {
-    const { date, ...part } = exercise;
-    const newExercise = new Exercise(date ? exercise : part);
-
-    User.findById(exercise.userId, (err, result) => {
-        if (err || !result) {
-            return done({
-                msg: err
-                    ? SAVING_EXERCISE_ERROR_MESSAGE
-                    : MISSING_USER_ERROR_MESSAGE
-            });
-        }
-
-        newExercise.save((err, result) => {
-            if (err) {
-                return done({ msg: SAVING_EXERCISE_ERROR_MESSAGE });
-            }
-
-            done(null, _mapExercise(result));
-        });
-    });
+function toExercise(result) {
+  const { id, description, duration, date } = result;
+  return { id, description, duration, date };
 }
 
-function getExercises(params, done) {
-    const { userId, from, to, limit } = params;
-    const conditions = { userId };
+export async function createExercise(input) {
+  const { date, ...part } = input;
+  const exercise = new Exercise(date ? input : part);
 
-    _assignDateBoundaries(conditions, from, to);
-
-    const query = Exercise.find(conditions);
-
-    if (limit) {
-        query.limit(parseInt(limit, 10));
+  try {
+    const { userId } = input;
+    const user = await userRepository.findUserById(userId);
+    if (!user) {
+      throw new CustomError(USER_NOT_FOUND_ERROR, CUSTOM_ERROR_TYPES.NOT_FOUND);
     }
 
-    query.exec((err, result) => {
-        if (err) {
-            return done({ msg: FETCHING_EXERCISES_ERROR_MESSAGE });
-        }
-
-        done(null, result.map(_mapExercise));
-    })
+    const result = await exercise.save();
+    return toExercise(result);
+  } catch (err) {
+    if (err instanceof CustomError) throw err;
+    throw new CustomError(EXERCISE_SAVE_ERROR);
+  }
 }
 
-function _assignDateBoundaries(conditions, ...dates) {
-    dates.forEach((date, index) => {
-        if (date) {
-            conditions.date = {
-                ...conditions.date,
-                [index === DATE_BOUNDARIES.FROM ? '$gt' : '$lt']: date
-            };
-        }
-    });
-}
+export async function getExercises(params) {
+  const { userId, from, to, limit } = params;
 
-function _mapExercise(exercise) {
-    const { id, description, duration, date } = exercise;
-
-    return {
-        id,
-        description,
-        duration,
-        date
+  const conditions = { userId };
+  if (from || to) {
+    conditions.date = {
+      ...(from ? { $gte: from } : {}),
+      ...(to ? { $lte: to } : {}),
     };
-}
+  }
 
-exports.createExercise = createExercise;
-exports.getExercises = getExercises;
+  const query = Exercise.find(conditions);
+  if (limit) {
+    query.limit(parseInt(limit, 10));
+  }
+
+  try {
+    const results = await query.exec();
+    return results.map((result) => toExercise(result));
+  } catch {
+    throw new CustomError(EXERCISES_GET_ERROR);
+  }
+}
