@@ -1,27 +1,21 @@
-'use strict';
+import cors from 'cors';
+import express from 'express';
 
-const cors = require('cors');
-const express = require('express');
-
-const fileController = require('./controllers/fileController');
+import * as fileController from './controllers/fileController.js';
 
 const PORT = process.env.PORT || 3000;
 
 const app = express();
 
-app.use(cors());
-app.use('/public', express.static('public'));
+app.use(cors({ optionsSuccessStatus: 200 }));
+app.use(express.static('public'));
 
 app.get('/', (_, res) => {
-  res.sendFile(__dirname + '/views/index.html')
+  res.sendFile('views/index.html', { root: import.meta.dirname });
 });
 
-app.post(
-  '/api/fileanalyse',
-  fileController.uploadFile,
-  fileController.extractFileMetadata
-);
+app.post('/api/fileanalyse', fileController.uploadFile, fileController.extractFileMetadata);
 
 app.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
+  console.log(`Your app is listening on port ${PORT}`);
 });
