@@ -9,7 +9,7 @@
     "watch": "nodemon server.js"
   },
   "dependencies": {
-    "express": "^5.1.0",
+    "express": "^5.2.1",
     "cors": "^2.8.5"
   },
   "devDependencies": {
