@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "express": "^5.2.1",
-    "cors": "^2.8.5"
+    "cors": "^2.8.6"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"
