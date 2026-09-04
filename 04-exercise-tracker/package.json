@@ -14,7 +14,7 @@
     "express": "^5.2.1",
     "express-validator": "^7.3.2",
     "mongodb": "^7.5.0",
-    "mongoose": "^9.9.3",
+    "mongoose": "^9.9.4",
     "nanoid": "^5.1.16"
   },
   "devDependencies": {
